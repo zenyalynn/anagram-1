@@ -16,43 +16,73 @@
 #include <algorithm>
 #include <bits/stdc++.h>
 #include <unordered_map>
+#include <stdio.h>
+#include <ctype.h>
 
 using namespace std;
 
 vector<string> dict;
-const int prime[] = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101};
+vector<vector<string>> words;
+vector<vector<string>> finaloutput; 
 
-int get_value(string current){
-    int value = 1; 
-    // for(unsigned int i = 0; i < current.length(); i++){
-    //     char temp = current[i];
-    //     value = value * prime[current];
-    // }
-    return value; 
-
-}
-
-string sorter(string in ){
+string sorter( string in ){ 
+    //sorter takes in a string and returns it alphabetically with no capitals, hyphens, or apostrophe's
+    for( unsigned int i = 0; i < in.length(); i++ ){ 
+        //puts everything to lower case
+        int c = in[i];
+        in[i] = tolower(c);
+    }
+    string chars = "-'";
+    for (char c: chars) { 
+        // gets rid of hyphens and apostrophe's
+		in.erase(remove(in.begin(), in.end(), c), in.end());
+	}
     sort(in.begin(), in.end()); 
+    //sorts the words alphabetically
     return in; 
 }
 
-vector<vector<string>> find_anagram(){
-    vector<vector<string>> words;
+void find_anagram(){
     unordered_map< string, vector<string>> mapping; 
     for (unsigned int i = 0; i < dict.size(); i++){
         string word = dict[i];
         //cout << i << " " << word << endl;
         string sorted = sorter(word);
-        cout << sorted << endl;
+        //cout << sorted << endl;
         mapping[sorted].push_back(word);
-    }  
+    } 
+    for (auto pair: mapping) {
+        std::cout << "{ " << pair.first << ", "<< pair.second << " }" << endl;
+    } 
     for (auto it : mapping){
         words.push_back(it.second);
     }    
-    cout << words[0][0] << endl;
-    return words; 
+    
 }
+void find_max() {
+    // finds the max length of anagrams by looping through 'words' and pushing them onto finaloutput
+    unsigned int max = 0; 
+    for( unsigned int i = 0; i < words.size(); i++){
+        //loops through the whole vector until it reaches its size
+        vector<string> temp = words.at(i);
+        // cout << i << " " << temp[0] << endl;
+        if(temp.size() == max){
+            // here you found another words with your max length and push it onto the final output
+            finaloutput.push_back(temp);
+        } 
+        if(temp.size() > max){
+            // here you found a new long word so you clear the old list and start adding the new words
+            max = temp.size(); 
+            finaloutput.clear(); 
+            finaloutput.push_back(temp);
+        }
+    }
+    cout << "Max is: " << max << endl; 
+}
+
+// void alphabetize() {
+
+// }
 
 bool load_values_from_file(const string &filename) {
     ifstream input_file(filename.c_str());
@@ -91,6 +121,7 @@ int main(int argc, char * const argv[]) {
     }
 
     find_anagram();
+    find_max();
 
 
 }
